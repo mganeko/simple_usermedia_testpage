@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div style="height:100px;">
+
+  </div>
+  <h3>getUserMedia simple testpage</h3>
+  <input type="checkbox" id="video_check" checked="1">video</input>
+  <input type="checkbox" id="audio_check">audio</input>
+  &nbsp;
+  <button onclick="startVideo()">start video</button>
+  <button onclick="stopVideo()">stop video</button>
+  <br />
+  <video id="local_video" width="320" height="240" controls="1" muted style="border: solid 1px black;">
+  </video>
+</body>
+<script>
+  function buildConstraints() {
+    const constraints = { video: false, audio: false };
+    if (document.getElementById('video_check').checked) {
+      constraints.video = true;
+    }
+    if (document.getElementById('audio_check').checked) {
+      constraints.audio = true;
+    }
+
+    return constraints;
+  }
+
+  function startVideo() {
+    console.log('startVideo()');
+    console.log('GUM9:', navigator.mediaDevices.getUserMedia);
+    const constraints = buildConstraints();
+    console.log('startVideo() constraints:', constraints);
+
+    const localVideo = document.getElementById('local_video');
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then(stream => {
+        localVideo.srcObject = stream;
+        localVideo.muted = true;
+        localVideo.play().catch(err => console.error('video play ERROR:', err));
+      })
+      .catch(err => {
+        console.error('getUserMedia ERROR:', err);
+      });
+  }
+
+  function stopVideo() {
+    const localVideo = document.getElementById('local_video');
+    if (localVideo.srcObject) {
+      localVideo.srcObject.getTracks().forEach(track => track.stop());
+      localVideo.pause();
+      localVideo.srcObject = null;
+    }
+  }
+
+  //startVideo();
+  console.log('index.html')
+</script>
+
+</html>
